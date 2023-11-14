@@ -77,17 +77,34 @@ Before starting to write the analysis code, it is good to check the file content
     <Array [{PV_npvs: 22}, ... {PV_npvs: 22}] type='1497445 * {"PV_npvs": int32}'>
     ```
 Coffea relies on [awkward-array](https://github.com/scikit-hep/awkward) to build up the codes. Few features of awkward array are introduced here.
-  + ak.where
+  + basic usages
     ```python
-    >>> a = [2, 2, 2]
-    >>> b = [-2, -2, -2]
-    >>> c = [1, 0, 1]
+    >>> import awkward as ak
+    >>> array = ak.Array([[2, 3, 5], [1, 2], [3, 4, 8]])
+    
+    >>> array[0]
+    <Array [2, 3, 5] type='3 * int64'>
+
+    >>> ak.num(array)    # Lengths of lists
+    <Array [3, 2, 3] type='3 * int64'>
+    ```
+  + ak.zip() -> Restructure/reformat arrays
+    ```python
+    >>> one = ak.Array([[1.1, 2.2, 3.3], [], [4.4, 5.5]])
+    >>> two = ak.Array([["a", "b", "c"], [], ["d", "e"]])
+    >>> print(ak.zip({"x": one, "y": two}))
+    [[{x: 1.1, y: 'a'}, {x: 2.2, y: 'b'}, ... x: 4.4, y: 'd'}, {x: 5.5, y: 'e'}]]
+    ```
+  + ak.where()
+    ```python
+    >>> a = ak.Array([2, 2, 2])
+    >>> b = ak.Array([-2, -2, -2])
+    >>> c = ak.Array([1, 0, 1])
     >>> ak.where(c, a, b)  # like: output[i] = x[i] if condition[i] else y[i]
     <Array [2, -2, 2] type='3 * int64'>
     ```
-  + ak.combinations (for-loop replacement)
+  + ak.combinations() -> for-loop replacement
     ```python
-    >>> import awkward as ak
     >>> array = ak.Array(["a", "b", "c", "d"])
     >>> print(ak.combinations(array, 2, axis=0))
     [('a', 'b'), ('a', 'c'), ('a', 'd'), ('b', 'c'), ('b', 'd'), ('c', 'd')]
