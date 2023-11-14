@@ -3,11 +3,12 @@ HEP User Training Workshop - coffea tutorial
 ### Column Object Framework For Effective Analysis ([Coffea](https://github.com/CoffeaTeam/coffea))
 - Physicist friendly tools for columnar analysis.
 - [uproot](https://github.com/scikit-hep/uproot5) and [awkward-array](https://github.com/scikit-hep/awkward) are used to provide an array-based syntax.
+<img src="https://coffeateam.github.io/coffea/_images/columnar.png" width="55%" style="margin:auto">
 
 The simple template illustrates how to find Z → ee events and plot their kinematics using coffea.   
 After activating the conda environment with coffea package installed, you can directly run the code by python.
 ```
-python3 coffea_example2.py
+python3 coffea_ASGC.py
 ```
 
 Coffea Processors
@@ -18,6 +19,7 @@ Users can write the physics analysis in coffea.processor without concerning the 
     ```python
     class MyProcessor(processor.ProcessorABC):
         def __init__(self):
+            # The accumulator stores data chunks together
             self._accumulator = processor.dict_accumulator({
                 "cutflow": processor.defaultdict_accumulator(int),
                 # e.g. sumw, histogram
@@ -36,7 +38,8 @@ Users can write the physics analysis in coffea.processor without concerning the 
         def postprocess(self, accumulator):
             return accumulator
     ```
-- The job runner chunks up jobs and parallelizes. the dask_executor is used.
+- The job runner chunks up jobs and parallelizes them. The fileset information and executor(local or distributed) should be assigned here.    
+  More local executor usages can be found [here](https://coffeateam.github.io/coffea/api/coffea.processor.FuturesExecutor.html#coffea.processor.FuturesExecutor). We take the dask_executor for example. 
     ```python
     cluster = HTCondorCluster(cores=1, memory="1GB", disk="1GB")
     cluster.adapt(minimum=1, maximum=10)
@@ -116,10 +119,15 @@ Object and event selections
 
 Plot the histogram
 ---
+The results can be stored as histograms.
+e.g. Plot the Z mass distribution in **coffea_ASGC.py**.
 ```python
+# Bins and categories of the histogram are defined here.
 dataset_axis = hist.axis.StrCategory(name="dataset", label="", categories=[], growth=True)
 mZ_axis = hist.axis.Regular(name="mZ", label="Z mass [GeV]", bins=30, start=60, stop=120)
 h = hist.Hist(dataset_axis, mZ_axis)
+
+# Fill the histogram
 h.fill(dataset=dataset, mZ=pruned_Z.mass)
 ```
 
@@ -128,3 +136,4 @@ Materials
 For further study, here are some materials for your reference.
 - [uproot tutorial](https://masonproffitt.github.io/uproot-tutorial/)
 - [coffea introduction talk](https://indico.cern.ch/event/833895/contributions/3577894/attachments/1928017/3192492/PyHEP_LindseyGray_17102019.pdf)
+- coffea mattermost
