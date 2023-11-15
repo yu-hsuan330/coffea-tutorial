@@ -8,6 +8,8 @@ HEP User Training Workshop - coffea tutorial
 The simple template illustrates how to find Z → ee events and plot their kinematics using coffea.   
 After activating the conda environment with coffea package installed, you can directly run the code by python.
 ```
+conda env create -f environment.yml
+activate coffea
 python3 coffea_ASGC.py
 ```
 
